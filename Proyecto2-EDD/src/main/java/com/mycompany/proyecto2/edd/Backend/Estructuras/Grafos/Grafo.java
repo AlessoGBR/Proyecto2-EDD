@@ -4,6 +4,8 @@
  */
 package com.mycompany.proyecto2.edd.Backend.Estructuras.Grafos;
 
+import com.mycompany.proyecto2.edd.Backend.Estructuras.ListaEnlazada.ListaEnlazada;
+
 /**
  *
  * @author alesso
@@ -299,81 +301,6 @@ public class Grafo {
         return grado;
     }
 
-    public void imprimirMatrizAdyacencia() {
-        System.out.println("MATRIZ DE ADYACENCIA:");
-        System.out.print("     ");
-        for (int i = 0; i < numVertices; i++) {
-            System.out.printf("%-5s", nombresBibliotecas[i].substring(0, Math.min(4, nombresBibliotecas[i].length())));
-        }
-        System.out.println();
-
-        for (int i = 0; i < numVertices; i++) {
-            System.out.printf("%-5s", nombresBibliotecas[i].substring(0, Math.min(4, nombresBibliotecas[i].length())));
-            for (int j = 0; j < numVertices; j++) {
-                System.out.printf("%-5d", matrizAdyacencia[i][j]);
-            }
-            System.out.println();
-        }
-    }
-
-    public void imprimirMatrizTiempos() {
-        System.out.println("MATRIZ DE TIEMPOS:");
-        System.out.print("     ");
-        for (int i = 0; i < numVertices; i++) {
-            System.out.printf("%-6s", nombresBibliotecas[i].substring(0, Math.min(5, nombresBibliotecas[i].length())));
-        }
-        System.out.println();
-
-        for (int i = 0; i < numVertices; i++) {
-            System.out.printf("%-5s", nombresBibliotecas[i].substring(0, Math.min(4, nombresBibliotecas[i].length())));
-            for (int j = 0; j < numVertices; j++) {
-                if (matrizAdyacencia[i][j] == 1) {
-                    System.out.printf("%-6d", matrizTiempos[i][j]);
-                } else {
-                    System.out.printf("%-6s", "-");
-                }
-            }
-            System.out.println();
-        }
-    }
-
-    public void imprimirMatrizCostos() {
-        System.out.println("MATRIZ DE COSTOS:");
-        System.out.print("     ");
-        for (int i = 0; i < numVertices; i++) {
-            System.out.printf("%-6s", nombresBibliotecas[i].substring(0, Math.min(5, nombresBibliotecas[i].length())));
-        }
-        System.out.println();
-
-        for (int i = 0; i < numVertices; i++) {
-            System.out.printf("%-5s", nombresBibliotecas[i].substring(0, Math.min(4, nombresBibliotecas[i].length())));
-            for (int j = 0; j < numVertices; j++) {
-                if (matrizAdyacencia[i][j] == 1) {
-                    System.out.printf("%-6d", matrizCostos[i][j]);
-                } else {
-                    System.out.printf("%-6s", "-");
-                }
-            }
-            System.out.println();
-        }
-    }
-
-    public void imprimirGrafo() {
-        System.out.println("GRAFO DE BIBLIOTECAS:");
-        System.out.println("NUMERO DE BIBLIOTECAS: " + numVertices);
-        System.out.println("CONEXIONES:");
-
-        for (int i = 0; i < numVertices; i++) {
-            for (int j = 0; j < numVertices; j++) {
-                if (matrizAdyacencia[i][j] == 1) {
-                    System.out.println(nombresBibliotecas[i] + " -> " + nombresBibliotecas[j]
-                            + " (TIEMPO: " + matrizTiempos[i][j]
-                            + ", COSTO: " + matrizCostos[i][j] + ")");
-                }
-            }
-        }
-    }
-
     public void limpiar() {
         numVertices = 0;
         inicializarMatrices();
@@ -381,5 +308,135 @@ public class Grafo {
             nombresBibliotecas[i] = null;
         }
         mensaje = "GRAFO LIMPIADO CORRECTAMENTE";
+    }
+
+    public ResultadoDijkstra dijkstraPorTiempo(String origen, String destino) {
+        int indiceOrigen = buscarIndiceBiblioteca(origen);
+        int indiceDestino = buscarIndiceBiblioteca(destino);
+
+        if (indiceOrigen == -1) {
+            mensaje = "ERROR: NO EXISTE LA BIBLIOTECA DE ORIGEN: " + origen;
+            return null;
+        }
+
+        if (indiceDestino == -1) {
+            mensaje = "ERROR: NO EXISTE LA BIBLIOTECA DE DESTINO: " + destino;
+            return null;
+        }
+
+        if (indiceOrigen == indiceDestino) {
+            mensaje = "ERROR: ORIGEN Y DESTINO SON LA MISMA BIBLIOTECA";
+            return null;
+        }
+
+        return dijkstra(indiceOrigen, indiceDestino, true);
+    }
+
+    public ResultadoDijkstra dijkstraPorCosto(String origen, String destino) {
+        int indiceOrigen = buscarIndiceBiblioteca(origen);
+        int indiceDestino = buscarIndiceBiblioteca(destino);
+
+        if (indiceOrigen == -1) {
+            mensaje = "ERROR: NO EXISTE LA BIBLIOTECA DE ORIGEN: " + origen;
+            return null;
+        }
+
+        if (indiceDestino == -1) {
+            mensaje = "ERROR: NO EXISTE LA BIBLIOTECA DE DESTINO: " + destino;
+            return null;
+        }
+
+        if (indiceOrigen == indiceDestino) {
+            mensaje = "ERROR: ORIGEN Y DESTINO SON LA MISMA BIBLIOTECA";
+            return null;
+        }
+
+        return dijkstra(indiceOrigen, indiceDestino, false);
+    }
+
+    private ResultadoDijkstra dijkstra(int origen, int destino, boolean usarTiempo) {
+        int[] distancias = new int[numVertices];
+        int[] predecesores = new int[numVertices];
+        boolean[] visitados = new boolean[numVertices];
+
+        for (int i = 0; i < numVertices; i++) {
+            distancias[i] = Integer.MAX_VALUE;
+            predecesores[i] = -1;
+            visitados[i] = false;
+        }
+
+        distancias[origen] = 0;
+
+        for (int count = 0; count < numVertices - 1; count++) {
+            int u = obtenerMinimaDistancia(distancias, visitados);
+
+            if (u == -1) {
+                break;
+            }
+
+            visitados[u] = true;
+
+            for (int v = 0; v < numVertices; v++) {
+                if (!visitados[v] && matrizAdyacencia[u][v] == 1) {
+                    int peso = usarTiempo ? matrizTiempos[u][v] : matrizCostos[u][v];
+
+                    if (distancias[u] != Integer.MAX_VALUE
+                            && distancias[u] + peso < distancias[v]) {
+                        distancias[v] = distancias[u] + peso;
+                        predecesores[v] = u;
+                    }
+                }
+            }
+        }
+
+        if (distancias[destino] == Integer.MAX_VALUE) {
+            mensaje = "NO EXISTE RUTA ENTRE " + nombresBibliotecas[origen]
+                    + " Y " + nombresBibliotecas[destino];
+            return null;
+        }
+
+        String[] ruta = construirRuta(predecesores, origen, destino);
+        int distanciaTotal = distancias[destino];
+
+        String criterio = usarTiempo ? "TIEMPO" : "COSTO";
+        mensaje = "RUTA OPTIMA ENCONTRADA POR " + criterio + ": " + distanciaTotal;
+
+        return new ResultadoDijkstra(ruta, distanciaTotal, usarTiempo);
+    }
+
+    private int obtenerMinimaDistancia(int[] distancias, boolean[] visitados) {
+        int minDistancia = Integer.MAX_VALUE;
+        int indiceMin = -1;
+
+        for (int i = 0; i < numVertices; i++) {
+            if (!visitados[i] && distancias[i] < minDistancia) {
+                minDistancia = distancias[i];
+                indiceMin = i;
+            }
+        }
+
+        return indiceMin;
+    }
+
+    private String[] construirRuta(int[] predecesores, int origen, int destino) {
+        ListaEnlazada listaTemp = new ListaEnlazada();
+        int actual = destino;
+        int contador = 0;
+
+        while (actual != -1) {
+            contador++;
+            actual = predecesores[actual];
+        }
+
+        String[] ruta = new String[contador];
+        actual = destino;
+        int pos = contador - 1;
+
+        while (actual != -1) {
+            ruta[pos--] = nombresBibliotecas[actual];
+            actual = predecesores[actual];
+        }
+
+        return ruta;
     }
 }

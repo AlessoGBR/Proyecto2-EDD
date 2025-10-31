@@ -1,0 +1,15 @@
+digraph RedBibliotecas {
+    node [shape=circle, style=filled, fillcolor=lightcoral];
+    graph [rankdir=TB];
+    "P1" [label="P1"];
+    "P2" [label="P2"];
+    "P3" [label="P3"];
+    "P4" [label="P4"];
+    "P5" [label="P5"];
+    "P1" -> "P2" [label="T:10 C:10"];
+    "P2" -> "P3" [label="T:10 C:10"];
+    "P3" -> "P4" [label="T:10 C:10"];
+    "P3" -> "P5" [label="T:1 C:1"];
+    "P4" -> "P5" [label="T:10 C:10"];
+    "P5" -> "P1" [label="T:10 C:10"];
+}

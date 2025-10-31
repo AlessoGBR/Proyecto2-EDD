@@ -4,6 +4,7 @@
  */
 package com.mycompany.proyecto2.edd.Backend.Estructuras.Arboles.ArbolAVL;
 
+import com.mycompany.proyecto2.edd.Backend.Estructuras.ListaEnlazada.ListaEnlazada;
 import com.mycompany.proyecto2.edd.Backend.Objetos.Libro;
 import java.util.Comparator;
 
@@ -22,7 +23,6 @@ public class ArbolAVL {
         this.comparador = comparador;
         this.tamanio = 0;
     }
-
 
     public ArbolAVL() {
         this((l1, l2) -> l1.getTitulo().compareToIgnoreCase(l2.getTitulo()));
@@ -56,7 +56,7 @@ public class ArbolAVL {
 
         return x;
     }
-    
+
     private NodoAVL rotarIzquierda(NodoAVL x) {
         NodoAVL y = x.derecho;
         NodoAVL T2 = y.izquierdo;
@@ -161,6 +161,25 @@ public class ArbolAVL {
         }
     }
 
+    public ListaEnlazada buscarTodosPorTitulo(String titulo) {
+        ListaEnlazada resultados = new ListaEnlazada();
+        buscarTodosPorTituloRec(raiz, titulo, resultados);
+        return resultados;
+    }
+
+    private void buscarTodosPorTituloRec(NodoAVL nodo, String titulo, ListaEnlazada resultados) {
+        if (nodo == null) {
+            return;
+        }
+
+        if (nodo.libro.getTitulo().toLowerCase().contains(titulo.toLowerCase())) {
+            resultados.insertarAlFinal(nodo.libro);
+        }
+
+        buscarTodosPorTituloRec(nodo.izquierdo, titulo, resultados);
+        buscarTodosPorTituloRec(nodo.derecho, titulo, resultados);
+    }
+
     private NodoAVL nodoMinimo(NodoAVL nodo) {
         NodoAVL actual = nodo;
         while (actual.izquierdo != null) {
@@ -198,7 +217,7 @@ public class ArbolAVL {
             NodoAVL sucesor = nodoMinimo(nodo.derecho);
             nodo.libro = sucesor.libro;
             nodo.derecho = eliminarRec(nodo.derecho, sucesor.libro);
-            tamanio++; 
+            tamanio++;
         }
 
         if (nodo == null) {
@@ -258,7 +277,6 @@ public class ArbolAVL {
         }
     }
 
-    
     public void postOrder(AccionLibro accion) {
         postOrderRec(raiz, accion);
     }

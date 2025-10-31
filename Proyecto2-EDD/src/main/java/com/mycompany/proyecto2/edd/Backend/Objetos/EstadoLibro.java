@@ -9,8 +9,18 @@ package com.mycompany.proyecto2.edd.Backend.Objetos;
  * @author alesso
  */
 public enum EstadoLibro {
-    
-    DISPONIBLE,
-    NO_DISPONIBLE
-    
+    DISPONIBLE("Disponible"),
+    PRESTADO("Prestado"),
+    EN_TRANSITO("En Tránsito"),
+    AGOTADO("Agotado");
+
+    private String descripcion;
+
+    EstadoLibro(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
 }

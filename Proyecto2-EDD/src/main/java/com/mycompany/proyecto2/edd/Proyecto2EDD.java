@@ -3,6 +3,9 @@
  */
 package com.mycompany.proyecto2.edd;
 
+import com.mycompany.proyecto2.edd.Backend.Util.SistemaBiblioteca;
+import com.mycompany.proyecto2.edd.Frontend.Inicio;
+
 
 /**
  *
@@ -11,6 +14,9 @@ package com.mycompany.proyecto2.edd;
 public class Proyecto2EDD {
 
     public static void main(String[] args) {
+        SistemaBiblioteca sitema = new SistemaBiblioteca();
+        Inicio inicio = new Inicio(sitema);
+        inicio.setVisible(true);
         
     }
 

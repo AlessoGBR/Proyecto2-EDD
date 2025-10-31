@@ -12,8 +12,8 @@ import com.mycompany.proyecto2.edd.Backend.Objetos.Libro;
  */
 public class NodoLista {
 
-    Libro libro;
-    NodoLista siguiente;
+    public Libro libro;
+    public NodoLista siguiente;
 
     public NodoLista(Libro libro) {
         this.libro = libro;

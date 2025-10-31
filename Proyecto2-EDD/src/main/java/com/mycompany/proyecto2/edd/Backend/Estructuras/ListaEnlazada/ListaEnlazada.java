@@ -296,6 +296,30 @@ public class ListaEnlazada {
         }
     }
 
+    public NodoLista getCabeza() {
+        return cabeza;
+    }
+
+    public void setCabeza(NodoLista cabeza) {
+        this.cabeza = cabeza;
+    }
+
+    public NodoLista getCola() {
+        return cola;
+    }
+
+    public void setCola(NodoLista cola) {
+        this.cola = cola;
+    }
+
+    public String getMensaje() {
+        return mensaje;
+    }
+
+    public void setMensaje(String mensaje) {
+        this.mensaje = mensaje;
+    }
+
     @Override
     public String toString() {
         if (estaVacia()) {
