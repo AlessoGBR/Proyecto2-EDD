@@ -10,7 +10,6 @@ import com.mycompany.proyecto2.edd.Frontend.Cargar.CargarArchivos;
 import com.mycompany.proyecto2.edd.Frontend.Red.RedBibliotecas;
 import com.mycompany.proyecto2.edd.Frontend.GestionLibros.GestionLibros;
 import com.mycompany.proyecto2.edd.Frontend.GestionBibliotecas.GesionBibliotecas;
-import com.mycompany.proyecto2.edd.Frontend.Reportes.Reportes;
 import com.mycompany.proyecto2.edd.Frontend.Transferencias.Transferencias;
 import com.mycompany.proyecto2.edd.Frontend.Visual.Visualizar;
 
@@ -60,6 +59,7 @@ public class Inicio extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("BIBLIOTECA MAGICA");
         setResizable(false);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -71,16 +71,16 @@ public class Inicio extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(174, 174, 174)
                 .addComponent(jLabel1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(54, 54, 54)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(65, Short.MAX_VALUE)
                 .addComponent(jLabel1)
-                .addContainerGap(66, Short.MAX_VALUE))
+                .addGap(55, 55, 55))
         );
 
         jPanel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));

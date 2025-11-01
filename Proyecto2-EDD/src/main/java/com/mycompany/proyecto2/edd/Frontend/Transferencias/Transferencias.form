@@ -25,9 +25,10 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="panelInferior" max="32767" attributes="0"/>
                   <Component id="panel1" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <Component id="panel2" max="32767" attributes="0"/>
@@ -49,7 +50,9 @@
                   <Component id="jPanel1" max="32767" attributes="0"/>
                   <Component id="panel2" max="32767" attributes="0"/>
               </Group>
-              <EmptySpace pref="137" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="panelInferior" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -263,6 +266,28 @@
         <Component class="javax.swing.JLabel" name="lblImagen">
         </Component>
       </SubComponents>
+    </Container>
+    <Container class="javax.swing.JPanel" name="panelInferior">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.BevelBorderInfo">
+            <BevelBorder/>
+          </Border>
+        </Property>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <EmptySpace min="0" pref="165" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+      </Layout>
     </Container>
   </SubComponents>
 </Form>

@@ -8,10 +8,12 @@ import com.mycompany.proyecto2.edd.Backend.Util.GeneradorGraphviz;
 import com.mycompany.proyecto2.edd.Backend.Util.SistemaBiblioteca;
 import com.mycompany.proyecto2.edd.Biblioteca;
 import com.mycompany.proyecto2.edd.Frontend.Inicio;
-import com.mycompany.proyecto2.edd.Frontend.Red.ButtonRenderRed;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.util.List;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -28,6 +30,7 @@ public class Transferencias extends javax.swing.JFrame {
     private DefaultTableModel modeloTablaLibros;
     private List<Biblioteca> bibliotecas;
     private GeneradorGraphviz generador;
+    private PanelColas panelColas;
 
     /**
      * Creates new form Transferencias
@@ -37,8 +40,10 @@ public class Transferencias extends javax.swing.JFrame {
     public Transferencias(SistemaBiblioteca sistema) {
         this.sistema = sistema;
         initComponents();
+        inicializarPanelColas();
         inicializarTabla();
         buscarBibliotecas();
+        
     }
 
     /**
@@ -64,6 +69,7 @@ public class Transferencias extends javax.swing.JFrame {
         panel2 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         lblImagen = new javax.swing.JLabel();
+        panelInferior = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("TRANSFERENCIA DE LIBROS");
@@ -191,6 +197,19 @@ public class Transferencias extends javax.swing.JFrame {
             .addComponent(lblImagen, javax.swing.GroupLayout.DEFAULT_SIZE, 472, Short.MAX_VALUE)
         );
 
+        panelInferior.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        javax.swing.GroupLayout panelInferiorLayout = new javax.swing.GroupLayout(panelInferior);
+        panelInferior.setLayout(panelInferiorLayout);
+        panelInferiorLayout.setHorizontalGroup(
+            panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        panelInferiorLayout.setVerticalGroup(
+            panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 165, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -198,6 +217,7 @@ public class Transferencias extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(panelInferior, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(panel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(panel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -214,7 +234,9 @@ public class Transferencias extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(panel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(137, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(panelInferior, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -285,8 +307,8 @@ public class Transferencias extends javax.swing.JFrame {
         tablaLibros.getColumnModel().getColumn(2).setPreferredWidth(50);
         tablaLibros.getColumnModel().getColumn(3).setPreferredWidth(50);
 
-        tablaLibros.getColumn("ACCION").setCellRenderer(new ButtonRenderRed());
-        //tablaLibros.getColumn("ACCION").setCellEditor(new ButtonEditorRed(new JCheckBox(), modeloTablaLibros, this.sistema));
+        tablaLibros.getColumn("ACCION").setCellRenderer(new ButtonRenderTr());
+        tablaLibros.getColumn("ACCION").setCellEditor(new ButtonEditorTr(new JCheckBox(), modeloTablaLibros, this.sistema, cbOrigen, cbDestino, chk1, panelColas));
         JScrollPane scrollPane = new JScrollPane(tablaLibros);
         scrollPane.setPreferredSize(new java.awt.Dimension(4, 341));
 
@@ -326,6 +348,19 @@ public class Transferencias extends javax.swing.JFrame {
         tablaLibros.repaint();
     }
 
+    private void inicializarPanelColas() {
+        panelColas = new PanelColas(this.sistema);
+        JScrollPane scrollColas = new JScrollPane(panelColas);
+        scrollColas.setPreferredSize(new Dimension(900, 250));
+        scrollColas.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+        panelInferior.removeAll();
+        panelInferior.setLayout(new BorderLayout());
+        panelInferior.add(scrollColas, BorderLayout.CENTER);
+        panelInferior.revalidate();
+        panelInferior.repaint();
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCalcular;
     private javax.swing.JButton btnRegresar;
@@ -341,5 +376,6 @@ public class Transferencias extends javax.swing.JFrame {
     private javax.swing.JLabel lblImagen;
     private javax.swing.JPanel panel1;
     private javax.swing.JPanel panel2;
+    private javax.swing.JPanel panelInferior;
     // End of variables declaration//GEN-END:variables
 }

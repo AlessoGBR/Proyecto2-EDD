@@ -406,8 +406,6 @@ public class Visualizar extends javax.swing.JFrame {
         lblImagen.setOpaque(true);
 
         scrollImagen = new JScrollPane(lblImagen);
-        scrollImagen.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollImagen.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollImagen.getVerticalScrollBar().setUnitIncrement(16);
 
         panelImagen.removeAll();

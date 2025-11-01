@@ -63,11 +63,11 @@ public class ButtonEditorBiblio extends DefaultCellEditor {
     @Override
     public Object getCellEditorValue() {
         if (isPushed) {
-            String nombreBiblioteca = (String) modeloBiblio.getValueAt(currentRow, 1);
+            String idBiblioteca = (String) modeloBiblio.getValueAt(currentRow, 0);
 
             int opcion = JOptionPane.showConfirmDialog(
                     null,
-                    "¿SEGURO DESEAS ELIMINAR LA BIBLIOTECA: \n" + nombreBiblioteca + "?",
+                    "¿SEGURO DESEAS ELIMINAR LA BIBLIOTECA: \n" + idBiblioteca + "?",
                     "Confirmar eliminación",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE
@@ -75,20 +75,20 @@ public class ButtonEditorBiblio extends DefaultCellEditor {
 
             if (opcion == JOptionPane.YES_OPTION) {
                 SwingUtilities.invokeLater(() -> {
-                    boolean exito = sistema.eliminarBiblioteca(nombreBiblioteca);
+                    boolean exito = sistema.eliminarBiblioteca(idBiblioteca);
 
                     if (exito) {
                         modeloBiblio.removeRow(currentRow);
                         JOptionPane.showMessageDialog(
                                 null,
-                                "BIBLIOTECA \"" + nombreBiblioteca + "\" ELIMINADA CORRECTAMENTE",
+                                "BIBLIOTECA \"" + idBiblioteca + "\" ELIMINADA CORRECTAMENTE",
                                 "Eliminación exitosa",
                                 JOptionPane.INFORMATION_MESSAGE
                         );
                     } else {
                         JOptionPane.showMessageDialog(
                                 null,
-                                "NO ES PUDO ELIMINAR LA BIBLIOTECA: \"" + nombreBiblioteca + "\".\n"
+                                "NO ES PUDO ELIMINAR LA BIBLIOTECA: \"" + idBiblioteca + "\".\n"
                                 + sistema.getMensaje(),
                                 "Error al eliminar",
                                 JOptionPane.ERROR_MESSAGE

@@ -78,6 +78,11 @@ public class SistemaBiblioteca {
             }
         }
 
+        if (buscarBiblioteca(nombre) != null) {
+            mensaje = "ERROR: YA EXISTE UNA BIBLIOTECA CON EL NOMBRE " + nombre;
+            return false;
+        }
+
         Biblioteca nueva = new Biblioteca(id, nombre, ubicacion, tiempoIngreso,
                 tiempoTraspaso, intervaloDespacho);
 
@@ -88,11 +93,12 @@ public class SistemaBiblioteca {
         return true;
     }
 
-    public boolean eliminarBiblioteca(String nombre) {
-        Biblioteca bib = buscarBiblioteca(nombre);
+    public boolean eliminarBiblioteca(String id) {
+
+        Biblioteca bib = buscarBibliotecaPorId(id);
 
         if (bib == null) {
-            mensaje = "ERROR: NO EXISTE LA BIBLIOTECA " + nombre;
+            mensaje = "ERROR: NO EXISTE LA BIBLIOTECA CON ID: " + id;
             return false;
         }
 
@@ -102,8 +108,17 @@ public class SistemaBiblioteca {
         }
 
         bibliotecas.remove(bib);
-        mensaje = "BIBLIOTECA ELIMINADA CORRECTAMENTE: " + nombre;
+        mensaje = "BIBLIOTECA ELIMINADA CORRECTAMENTE: " + id;
         return true;
+    }
+
+    public Biblioteca buscarBibliotecaPorId(String id) {
+        for (Biblioteca b : bibliotecas) {
+            if (b.getId().equalsIgnoreCase(id)) {
+                return b;
+            }
+        }
+        return null;
     }
 
     public Biblioteca buscarBiblioteca(String nombre) {

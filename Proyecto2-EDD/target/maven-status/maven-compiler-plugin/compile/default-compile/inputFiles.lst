@@ -20,6 +20,7 @@
 /home/alesso/Desktop/Proyecto2-EDD/Proyecto2-EDD/src/main/java/com/mycompany/proyecto2/edd/Backend/Util/GeneradorGraphviz.java
 /home/alesso/Desktop/Proyecto2-EDD/Proyecto2-EDD/src/main/java/com/mycompany/proyecto2/edd/Backend/Util/MetodosOrdenamiento.java
 /home/alesso/Desktop/Proyecto2-EDD/Proyecto2-EDD/src/main/java/com/mycompany/proyecto2/edd/Backend/Util/SistemaBiblioteca.java
+/home/alesso/Desktop/Proyecto2-EDD/Proyecto2-EDD/src/main/java/com/mycompany/proyecto2/edd/Backend/Util/Transferencia.java
 /home/alesso/Desktop/Proyecto2-EDD/Proyecto2-EDD/src/main/java/com/mycompany/proyecto2/edd/Biblioteca.java
 /home/alesso/Desktop/Proyecto2-EDD/Proyecto2-EDD/src/main/java/com/mycompany/proyecto2/edd/Frontend/Busquedas/Busquedas.java
 /home/alesso/Desktop/Proyecto2-EDD/Proyecto2-EDD/src/main/java/com/mycompany/proyecto2/edd/Frontend/Busquedas/GraficoComparacion.java
@@ -44,6 +45,7 @@
 /home/alesso/Desktop/Proyecto2-EDD/Proyecto2-EDD/src/main/java/com/mycompany/proyecto2/edd/Frontend/Reportes/Reportes.java
 /home/alesso/Desktop/Proyecto2-EDD/Proyecto2-EDD/src/main/java/com/mycompany/proyecto2/edd/Frontend/Transferencias/ButtonEditorTr.java
 /home/alesso/Desktop/Proyecto2-EDD/Proyecto2-EDD/src/main/java/com/mycompany/proyecto2/edd/Frontend/Transferencias/ButtonRenderTr.java
+/home/alesso/Desktop/Proyecto2-EDD/Proyecto2-EDD/src/main/java/com/mycompany/proyecto2/edd/Frontend/Transferencias/PanelColas.java
 /home/alesso/Desktop/Proyecto2-EDD/Proyecto2-EDD/src/main/java/com/mycompany/proyecto2/edd/Frontend/Transferencias/Transferencias.java
 /home/alesso/Desktop/Proyecto2-EDD/Proyecto2-EDD/src/main/java/com/mycompany/proyecto2/edd/Frontend/Visual/Visualizar.java
 /home/alesso/Desktop/Proyecto2-EDD/Proyecto2-EDD/src/main/java/com/mycompany/proyecto2/edd/Proyecto2EDD.java

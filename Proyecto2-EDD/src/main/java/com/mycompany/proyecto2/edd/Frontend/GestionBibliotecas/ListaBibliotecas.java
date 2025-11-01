@@ -48,6 +48,8 @@ public class ListaBibliotecas extends javax.swing.JPanel {
         btnActualizar = new javax.swing.JButton();
         panel = new javax.swing.JPanel();
 
+        setToolTipText("LISTA DE BIBLIOTECAS");
+
         jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         jLabel1.setText("LISTA DE BIBLIOTECAS");

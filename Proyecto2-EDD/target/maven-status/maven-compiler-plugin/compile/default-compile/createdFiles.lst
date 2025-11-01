@@ -15,6 +15,7 @@ com/mycompany/proyecto2/edd/Backend/Util/CargadorCSV.class
 com/mycompany/proyecto2/edd/Frontend/Transferencias/Transferencias$2.class
 com/mycompany/proyecto2/edd/Frontend/GestionBibliotecas/GesionBibliotecas$3.class
 com/mycompany/proyecto2/edd/Frontend/GestionLibros/ListarLibros.class
+com/mycompany/proyecto2/edd/Frontend/Transferencias/PanelColas.class
 com/mycompany/proyecto2/edd/Frontend/Visual/Visualizar$6.class
 com/mycompany/proyecto2/edd/Backend/Estructuras/Grafos/Grafo.class
 com/mycompany/proyecto2/edd/Backend/Estructuras/Arboles/ArbolAVL/NodoAVL.class
@@ -101,6 +102,7 @@ com/mycompany/proyecto2/edd/Backend/Util/MetodosOrdenamiento.class
 com/mycompany/proyecto2/edd/Frontend/GestionLibros/GestionLibros$1.class
 com/mycompany/proyecto2/edd/Backend/Estructuras/Arboles/ArbolBPlus/ArbolBPlus$AccionGenero.class
 com/mycompany/proyecto2/edd/Backend/Estructuras/ListaEnlazada/NodoLista.class
+com/mycompany/proyecto2/edd/Backend/Util/Transferencia.class
 com/mycompany/proyecto2/edd/Frontend/Cargar/CargarArchivos.class
 com/mycompany/proyecto2/edd/Frontend/Busquedas/GraficoComparacion.class
 com/mycompany/proyecto2/edd/Frontend/GestionLibros/AgregarLibro$2.class

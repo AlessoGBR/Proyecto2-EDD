@@ -314,6 +314,7 @@ public class CargarArchivos extends javax.swing.JFrame {
         cbBiblio.removeAllItems();
         if (bibliotecas.isEmpty()) {
             cbBiblio.addItem("NO HAY BIBLIOTECAS");
+            btnLibros.setEnabled(false);
         } else {
             for (Biblioteca e : this.bibliotecas) {
                 cbBiblio.addItem(e.getNombre());

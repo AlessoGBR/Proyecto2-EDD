@@ -6,7 +6,6 @@ package com.mycompany.proyecto2.edd.Frontend.GestionBibliotecas;
 
 import com.mycompany.proyecto2.edd.Backend.Util.SistemaBiblioteca;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 /**
  *
@@ -49,6 +48,8 @@ public class AgregarBiblioteca extends javax.swing.JPanel {
         spDespacho = new javax.swing.JSpinner();
         jLabel6 = new javax.swing.JLabel();
         txtId = new javax.swing.JTextField();
+
+        setToolTipText("CREAR BIBLIOTECA");
 
         jLabel1.setText("NOMBRE:");
 
