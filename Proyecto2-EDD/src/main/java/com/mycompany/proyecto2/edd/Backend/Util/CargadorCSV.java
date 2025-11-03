@@ -150,7 +150,7 @@ public class CargadorCSV {
         try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
             String linea;
             int numeroLinea = 0;
-            linea = br.readLine(); 
+            linea = br.readLine();
             numeroLinea++;
 
             while ((linea = br.readLine()) != null) {
@@ -236,10 +236,17 @@ public class CargadorCSV {
                         continue;
                     }
 
-                    String origen = datos[0].trim();
-                    String destino = datos[1].trim();
-                    int tiempo = Integer.parseInt(datos[2].trim());
-                    int costo = datos.length > 3 ? Integer.parseInt(datos[3].trim()) : tiempo * 5;
+                    String origen = datos[0].trim().replace("\"", "");
+                    String destino = datos[1].trim().replace("\"", "");
+
+                    double tiempoDouble = Double.parseDouble(datos[2].trim());
+                    int tiempo = (int) Math.round(tiempoDouble);
+
+                    double costoDouble = datos.length > 3
+                            ? Double.parseDouble(datos[3].trim())
+                            : tiempoDouble * 5;
+
+                    int costo = (int) Math.round(costoDouble);
 
                     if (sistema.agregarConexion(origen, destino, tiempo, costo, false)) {
                         lineasExitosas++;

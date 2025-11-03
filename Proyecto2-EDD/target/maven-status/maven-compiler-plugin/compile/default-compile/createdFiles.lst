@@ -63,6 +63,7 @@ com/mycompany/proyecto2/edd/Backend/Util/GeneradorGraphviz.class
 com/mycompany/proyecto2/edd/Frontend/GestionLibros/GestionLibros$3.class
 com/mycompany/proyecto2/edd/Backend/Estructuras/ListaEnlazada/ListaEnlazada$AccionLibro.class
 com/mycompany/proyecto2/edd/Frontend/GestionLibros/ListarLibros$1.class
+com/mycompany/proyecto2/edd/Backend/Estructuras/Arboles/ArbolB/ColeccionLibro.class
 com/mycompany/proyecto2/edd/Frontend/GestionLibros/BuscarLibro$2.class
 com/mycompany/proyecto2/edd/Frontend/Visual/Visualizar$2.class
 com/mycompany/proyecto2/edd/Backend/Estructuras/Cola/NodoCola.class

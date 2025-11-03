@@ -4,8 +4,6 @@
  */
 package com.mycompany.proyecto2.edd.Backend.Estructuras.Arboles.ArbolB;
 
-import com.mycompany.proyecto2.edd.Backend.Objetos.Libro;
-
 /**
  *
  * @author alesso
@@ -13,14 +11,14 @@ import com.mycompany.proyecto2.edd.Backend.Objetos.Libro;
 public class NodoB {
 
     public int numClaves;
-    private Libro[] claves;
-    private NodoB[] hijos;
-    private boolean esHoja;
+    public ColeccionLibro[] claves;
+    public NodoB[] hijos;
+    public boolean esHoja;
 
     public NodoB(int orden, boolean esHoja) {
         this.numClaves = 0;
-        this.claves = new Libro[orden - 1];
-        this.hijos = new NodoB[orden];
+        this.claves = new ColeccionLibro[orden];
+        this.hijos = new NodoB[orden + 1];
         this.esHoja = esHoja;
     }
 
@@ -28,7 +26,7 @@ public class NodoB {
         return numClaves;
     }
 
-    public Libro[] getClaves() {
+    public ColeccionLibro[] getClaves() {
         return claves;
     }
 
@@ -44,7 +42,7 @@ public class NodoB {
         this.numClaves = numClaves;
     }
 
-    public void setClaves(Libro[] claves) {
+    public void setClaves(ColeccionLibro[] claves) {
         this.claves = claves;
     }
 
@@ -54,5 +52,9 @@ public class NodoB {
 
     public void setEsHoja(boolean esHoja) {
         this.esHoja = esHoja;
+    }
+
+    public boolean estaLleno(int orden) {
+        return numClaves == orden - 1;
     }
 }

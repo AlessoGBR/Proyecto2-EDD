@@ -7,6 +7,7 @@ package com.mycompany.proyecto2.edd.Backend.Util;
 import com.mycompany.proyecto2.edd.Backend.Estructuras.Arboles.ArbolAVL.ArbolAVL;
 import com.mycompany.proyecto2.edd.Backend.Estructuras.Arboles.ArbolAVL.NodoAVL;
 import com.mycompany.proyecto2.edd.Backend.Estructuras.Arboles.ArbolB.ArbolB;
+import com.mycompany.proyecto2.edd.Backend.Estructuras.Arboles.ArbolB.ColeccionLibro;
 import com.mycompany.proyecto2.edd.Backend.Estructuras.Arboles.ArbolB.NodoB;
 import com.mycompany.proyecto2.edd.Backend.Estructuras.Arboles.ArbolBPlus.ArbolBPlus;
 import com.mycompany.proyecto2.edd.Backend.Estructuras.Arboles.ArbolBPlus.NodoBPlus;
@@ -173,26 +174,32 @@ public class GeneradorGraphviz {
         int idActual = contadorNodos++;
 
         StringBuilder label = new StringBuilder("{");
-        for (int i = 0; i < nodo.getNumClaves(); i++) {
+        for (int i = 0; i < nodo.numClaves; i++) {
             if (i > 0) {
                 label.append("|");
             }
-            label.append(nodo.getClaves()[i].getAnioPublicacion());
+
+            ColeccionLibro coleccion = nodo.claves[i];
+            if (coleccion != null) {
+                label.append("AÑO: ").append(coleccion.getAnioPublicacion())
+                        .append("\\n(").append(coleccion.getCopias().size()).append(" LIBROS)");
+            }
         }
         label.append("}");
 
         dot.append("    node").append(idActual)
-                .append(" [label=\"").append(label.toString()).append("\"];\n");
+                .append(" [label=\"").append(label.toString())
+                .append("\", shape=record, style=filled, fillcolor=lightgoldenrod1];\n");
 
         if (idPadre >= 0) {
             dot.append("    node").append(idPadre)
                     .append(" -> node").append(idActual).append(";\n");
         }
 
-        if (!nodo.isEsHoja()) {
-            for (int i = 0; i <= nodo.getNumClaves(); i++) {
-                if (nodo.getHijos()[i] != null) {
-                    generarNodosB(nodo.getHijos()[i], dot, idActual);
+        if (!nodo.esHoja) {
+            for (int i = 0; i <= nodo.numClaves; i++) {
+                if (nodo.hijos[i] != null) {
+                    generarNodosB(nodo.hijos[i], dot, idActual);
                 }
             }
         }
@@ -250,20 +257,26 @@ public class GeneradorGraphviz {
             if (i > 0) {
                 label.append("|");
             }
-            String genero = nodo.getClaves()[i];
-            if (genero.length() > 10) {
-                genero = genero.substring(0, 8) + "..";
+
+            ColeccionLibro coleccion = nodo.getClaves()[i];
+            if (coleccion != null) {
+                label.append(coleccion.getAnioPublicacion());
+            } else {
+                label.append(" ");
             }
-            label.append(genero);
         }
         label.append("}");
 
         dot.append("    node").append(idActual)
-                .append(" [label=\"").append(label.toString()).append("\"];\n");
+                .append(" [label=\"").append(label.toString())
+                .append("\", shape=record, style=filled, fillcolor=")
+                .append(nodo.isEsHoja() ? "lightyellow" : "lightblue")
+                .append("];\n");
 
         if (idPadre >= 0) {
             dot.append("    node").append(idPadre)
-                    .append(" -> node").append(idActual).append(";\n");
+                    .append(" -> node").append(idActual)
+                    .append(" [color=gray];\n");
         }
 
         if (!nodo.isEsHoja()) {
@@ -272,6 +285,16 @@ public class GeneradorGraphviz {
                     generarNodosBPlus(nodo.getHijos()[i], dot, idActual);
                 }
             }
+        }
+
+        if (nodo.isEsHoja() && nodo.getSiguiente() != null) {
+            int idSiguiente = contadorNodos;
+            if (nodo.getSiguiente().getNumClaves() > 0) {
+                generarNodosBPlus(nodo.getSiguiente(), dot, -1);
+            }
+            dot.append("    node").append(idActual)
+                    .append(" -> node").append(idSiguiente)
+                    .append(" [style=dashed, color=red, label=\"siguiente\"];\n");
         }
     }
 

@@ -10,6 +10,7 @@ import com.mycompany.proyecto2.edd.Backend.Estructuras.Arboles.ArbolBPlus.ArbolB
 import com.mycompany.proyecto2.edd.Backend.Estructuras.ListaEnlazada.ListaEnlazada;
 import com.mycompany.proyecto2.edd.Backend.Estructuras.TablaHash.TablaHashLibros;
 import com.mycompany.proyecto2.edd.Backend.Objetos.Libro;
+import java.util.ArrayList;
 
 /**
  *
@@ -191,11 +192,11 @@ public class ComparadorBusquedas {
         long inicio = System.nanoTime();
 
         Libro encontrado = null;
-        ListaEnlazada todos = arbolBPlus.obtenerTodosLosLibros();
+        ArrayList<Libro> todos = arbolBPlus.obtenerTodosLosLibros();
 
-        for (int i = 0; i < todos.getTamanio(); i++) {
-            if (todos.obtener(i).getTitulo().equalsIgnoreCase(titulo)) {
-                encontrado = todos.obtener(i);
+        for (Libro libro : todos) {
+            if (libro.getTitulo().equalsIgnoreCase(titulo)) {
+                encontrado = libro;
                 break;
             }
         }
@@ -203,8 +204,9 @@ public class ComparadorBusquedas {
         long fin = System.nanoTime();
         double tiempoMs = (fin - inicio) / 1_000_000.0;
 
-        int comparaciones = encontrado != null
-                ? (int) Math.ceil(Math.log(arbolBPlus.getTamanio()) / Math.log(arbolBPlus.getOrden())) : 0;
+        int comparaciones = (encontrado != null && arbolBPlus.getTamanio() > 1)
+                ? (int) Math.ceil(Math.log(arbolBPlus.getTamanio()) / Math.log(arbolBPlus.getOrden()))
+                : 0;
 
         return new ResultadoComparacion(
                 "BUSQUEDA ARBOL B+",

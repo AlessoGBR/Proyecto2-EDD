@@ -218,22 +218,22 @@ public class CargarArchivos extends javax.swing.JFrame {
 
             CargadorCSV cargador = new CargadorCSV();
             System.out.println(cbBiblio.getSelectedItem().toString());
-            /*
+
             boolean exito = cargador.cargarCatalogoLibros(rutaArchivo, this.sistema, cbBiblio.getSelectedItem().toString());
 
             if (exito) {
                 JOptionPane.showMessageDialog(this,
-                        "✅ " + cargador.getMensaje(),
+                        cargador.getMensaje(),
                         "Carga completada", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this,
-                        "⚠️ " + cargador.getMensaje() + "\n\n" + cargador.getLogErrores(),
+                        cargador.getMensaje() + "\n\n" + cargador.getLogErrores(),
                         "Errores en carga", JOptionPane.WARNING_MESSAGE);
             }
         } else {
             JOptionPane.showMessageDialog(this,
                     "No se seleccionó ningún archivo.",
-                    "Carga cancelada", JOptionPane.WARNING_MESSAGE); */
+                    "Carga cancelada", JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_btnLibrosActionPerformed
 
@@ -259,11 +259,11 @@ public class CargarArchivos extends javax.swing.JFrame {
 
             if (exito) {
                 JOptionPane.showMessageDialog(this,
-                        "✅ " + cargador.getMensaje(),
+                        cargador.getMensaje(),
                         "Carga completada", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this,
-                        "⚠️ " + cargador.getMensaje() + "\n\n" + cargador.getLogErrores(),
+                        cargador.getMensaje() + "\n\n" + cargador.getLogErrores(),
                         "Errores en carga", JOptionPane.WARNING_MESSAGE);
             }
         } else {
@@ -295,11 +295,11 @@ public class CargarArchivos extends javax.swing.JFrame {
 
             if (exito) {
                 JOptionPane.showMessageDialog(this,
-                        "✅ " + cargador.getMensaje(),
+                        cargador.getMensaje(),
                         "Carga completada", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this,
-                        "⚠️ " + cargador.getMensaje() + "\n\n" + cargador.getLogErrores(),
+                        cargador.getMensaje() + "\n\n" + cargador.getLogErrores(),
                         "Errores en carga", JOptionPane.WARNING_MESSAGE);
             }
         } else {

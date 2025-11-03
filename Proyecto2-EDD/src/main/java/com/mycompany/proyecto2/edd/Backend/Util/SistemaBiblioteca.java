@@ -43,8 +43,8 @@ public class SistemaBiblioteca {
         this.grafoRed = new Grafo(50);
         this.ordenardor = new MetodosOrdenamiento();
         this.arbolAVL = new ArbolAVL();
-        this.arbolB = new ArbolB(5);
-        this.arbolBPlus = new ArbolBPlus(5);
+        this.arbolB = new ArbolB(10);
+        this.arbolBPlus = new ArbolBPlus(10);
         this.tablaHash = new TablaHashLibros(101);
         this.listaPrincipal = new ListaEnlazada();
         this.pilaDeshacer = new Pila();
@@ -87,7 +87,7 @@ public class SistemaBiblioteca {
                 tiempoTraspaso, intervaloDespacho);
 
         bibliotecas.add(nueva);
-        grafoRed.agregarBiblioteca(nombre);
+        grafoRed.agregarBiblioteca(id);
 
         mensaje = "BIBLIOTECA AGREGADA CORRECTAMENTE: " + nombre;
         return true;
@@ -211,7 +211,7 @@ public class SistemaBiblioteca {
             log.append("- ARBOL B\n");
         }
 
-        if (arbolBPlus.eliminar(libro.getGenero(), isbn)) {
+        if (arbolBPlus.eliminarPorGeneroYIsbn(libro.getGenero(), isbn)) {
             log.append("- ARBOL B+\n");
         }
 
@@ -253,11 +253,11 @@ public class SistemaBiblioteca {
         return listaPrincipal.buscarPorAutor(autor);
     }
 
-    public ListaEnlazada buscarLibrosPorGenero(String genero) {
+    public ArrayList<Libro> buscarLibrosPorGenero(String genero) {
         return arbolBPlus.buscarPorGenero(genero);
     }
 
-    public ListaEnlazada buscarLibrosPorRangoAnios(int anioInicio, int anioFin) {
+    public ArrayList<Libro> buscarLibrosPorRangoAnios(int anioInicio, int anioFin) {
         return arbolB.buscarPorRangoAnios(anioInicio, anioFin);
     }
 

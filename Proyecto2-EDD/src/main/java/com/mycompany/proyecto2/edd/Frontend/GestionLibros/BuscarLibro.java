@@ -8,6 +8,7 @@ import com.mycompany.proyecto2.edd.Backend.Estructuras.ListaEnlazada.ListaEnlaza
 import com.mycompany.proyecto2.edd.Backend.Estructuras.ListaEnlazada.NodoLista;
 import com.mycompany.proyecto2.edd.Backend.Objetos.Libro;
 import com.mycompany.proyecto2.edd.Backend.Util.SistemaBiblioteca;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
@@ -362,18 +363,27 @@ public class BuscarLibro extends javax.swing.JPanel {
         } else if (chk4.isSelected()) {
             String genero = txtBusqueda.getText().trim();
             if (!genero.isEmpty()) {
-                ListaEnlazada libro = sistema.buscarLibrosPorGenero(genero);
-                agregarListaATabla(libro);
+                ArrayList<Libro> libro = sistema.buscarLibrosPorGenero(genero);
+                agregarListaATablaArray(libro);
+            } else {
+                JOptionPane.showMessageDialog(this, "INGRESE UN GENERO PARA BUSCAR", "ERROR", JOptionPane.ERROR_MESSAGE);
             }
-
         } else if (chk5.isSelected()) {
             try {
                 int anioInicio = date1.getYear();
                 int anioFin = date2.getYear();
-                ListaEnlazada libro = sistema.buscarLibrosPorRangoAnios(anioInicio, anioFin);
-                agregarListaATabla(libro);
+
+                ArrayList<Libro> libro = sistema.buscarLibrosPorRangoAnios(anioInicio, anioFin);
+
+                agregarListaATablaArray(libro);
+
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "SELECCIONE FECHAS VALIDAS", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(
+                        this,
+                        "SELECCIONE FECHAS VALIDAS",
+                        "ERROR",
+                        JOptionPane.ERROR_MESSAGE
+                );
             }
         }
 
@@ -401,6 +411,20 @@ public class BuscarLibro extends javax.swing.JPanel {
             Libro libro = (Libro) actual.getLibro();
             agregarLibroATabla(libro);
             actual = actual.getSiguiente();
+        }
+    }
+
+    private void agregarListaATablaArray(ArrayList<Libro> libros) {
+        modeloTablaLibros.setRowCount(0);
+        for (Libro libro : libros) {
+            modeloTablaLibros.addRow(new Object[]{
+                libro.getTitulo(),
+                libro.getAutor(),
+                libro.getIsbn(),
+                libro.getAnioPublicacion(),
+                libro.getGenero(),
+                libro.getEstado()
+            });
         }
     }
 

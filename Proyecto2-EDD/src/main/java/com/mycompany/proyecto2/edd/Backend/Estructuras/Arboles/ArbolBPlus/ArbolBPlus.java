@@ -4,8 +4,10 @@
  */
 package com.mycompany.proyecto2.edd.Backend.Estructuras.Arboles.ArbolBPlus;
 
+import com.mycompany.proyecto2.edd.Backend.Estructuras.Arboles.ArbolB.ColeccionLibro;
 import com.mycompany.proyecto2.edd.Backend.Estructuras.ListaEnlazada.ListaEnlazada;
 import com.mycompany.proyecto2.edd.Backend.Objetos.Libro;
+import java.util.ArrayList;
 
 /**
  *
@@ -17,7 +19,7 @@ public class ArbolBPlus {
     private int orden;
     private NodoBPlus raiz;
     private int tamanio;
-    
+
     public ArbolBPlus(int orden) {
         if (orden < 3) {
             this.mensaje = "EL ORDEN DEL ARBOL B+ DEBE SER AL MENOS 3";
@@ -29,306 +31,382 @@ public class ArbolBPlus {
         this.raiz = new NodoBPlus(this.orden, true);
         this.tamanio = 0;
     }
-    
+
     public ArbolBPlus() {
-        this(3);
+        this(10);
     }
-    
+
     public String getMensaje() {
         return mensaje;
     }
-    
+
     public int getTamanio() {
         return tamanio;
     }
-    
+
     public boolean estaVacio() {
         return tamanio == 0;
     }
-    
+
     public NodoBPlus getRaiz() {
         return raiz;
     }
-    
+
     public int getOrden() {
         return orden;
     }
-    
+
     public void insertar(Libro libro) {
-        if (libro == null) {
-            mensaje = "ERROR: NO SE PUEDE INSERTAR UN LIBRO NULO";
+        if (raiz == null) {
+            raiz = new NodoBPlus(orden, true);
+            raiz.getClaves()[0] = new ColeccionLibro(libro);
+            raiz.setNumClaves(1);
+            tamanio++;
             return;
         }
-        
-        String genero = libro.getGenero().toUpperCase();
-        
-        if (raiz.numClaves == orden - 1) {
+
+        NodoBPlus nodo = raiz;
+
+        if (nodo.getNumClaves() == orden - 1) {
             NodoBPlus nuevaRaiz = new NodoBPlus(orden, false);
-            nuevaRaiz.hijos[0] = raiz;
-            dividirHijo(nuevaRaiz, 0);
+            nuevaRaiz.getHijos()[0] = nodo;
+            dividirNodo(nuevaRaiz, 0, nodo);
             raiz = nuevaRaiz;
+            insertarEnNodo(nuevaRaiz, libro);
+        } else {
+            insertarEnNodo(nodo, libro);
         }
-        
-        insertarNoLleno(raiz, genero, libro);
+
         tamanio++;
-        mensaje = "LIBRO INSERTADO CORRECTAMENTE: " + libro.getTitulo();
     }
-    
-    private void insertarNoLleno(NodoBPlus nodo, String clave, Libro libro) {
-        int i = nodo.numClaves - 1;
-        
-        if (nodo.esHoja) {
-            while (i >= 0 && clave.compareTo(nodo.claves[i]) < 0) {
-                nodo.claves[i + 1] = nodo.claves[i];
-                nodo.valores[i + 1] = nodo.valores[i];
-                i--;
+
+    private void insertarEnNodo(NodoBPlus nodo, Libro libro) {
+        if (nodo.isEsHoja()) {
+            int i = 0;
+            while (i < nodo.getNumClaves() && libro.getAnioPublicacion() > nodo.getClaves()[i].getAnioPublicacion()) {
+                i++;
             }
-            
-            if (i >= 0 && clave.equals(nodo.claves[i])) {
-                ListaEnlazada lista = (ListaEnlazada) nodo.valores[i];
-                lista.insertarAlFinal(libro);
-            } else {
-                nodo.claves[i + 1] = clave;
-                ListaEnlazada lista = new ListaEnlazada();
-                lista.insertarAlFinal(libro);
-                nodo.valores[i + 1] = lista;
-                nodo.numClaves++;
+
+            if (i < nodo.getNumClaves() && nodo.getClaves()[i].mismoGrupo(libro)) {
+                nodo.getClaves()[i].agregarCopia(libro);
+                return;
+            }
+
+            for (int j = nodo.getNumClaves(); j > i; j--) {
+                nodo.getClaves()[j] = nodo.getClaves()[j - 1];
+            }
+            nodo.getClaves()[i] = new ColeccionLibro(libro);
+            nodo.setNumClaves(nodo.getNumClaves() + 1);
+
+            if (nodo.getNumClaves() == orden) {
+                dividirHoja(nodo);
             }
         } else {
-            while (i >= 0 && clave.compareTo(nodo.claves[i]) < 0) {
+            int i = nodo.getNumClaves() - 1;
+            while (i >= 0 && libro.getAnioPublicacion() < nodo.getClaves()[i].getAnioPublicacion()) {
                 i--;
             }
             i++;
-            
-            if (nodo.hijos[i].numClaves == orden - 1) {
-                dividirHijo(nodo, i);
-                if (clave.compareTo(nodo.claves[i]) > 0) {
+
+            if (nodo.getHijos()[i].getNumClaves() == orden - 1) {
+                dividirNodo(nodo, i, nodo.getHijos()[i]);
+                if (libro.getAnioPublicacion() > nodo.getClaves()[i].getAnioPublicacion()) {
                     i++;
                 }
             }
-            insertarNoLleno(nodo.hijos[i], clave, libro);
+            insertarEnNodo(nodo.getHijos()[i], libro);
         }
     }
-    
-    private void dividirHijo(NodoBPlus padre, int indice) {
-        NodoBPlus nodoLleno = padre.hijos[indice];
-        NodoBPlus nuevoNodo = new NodoBPlus(orden, nodoLleno.esHoja);
-        
-        int mitad = orden / 2;
-        nuevoNodo.numClaves = orden - mitad - 1;
-        
-        if (nodoLleno.esHoja) {
-            for (int j = 0; j < nuevoNodo.numClaves; j++) {
-                nuevoNodo.claves[j] = nodoLleno.claves[j + mitad];
-                nuevoNodo.valores[j] = nodoLleno.valores[j + mitad];
+
+    private void dividirNodo(NodoBPlus padre, int indiceHijo, NodoBPlus hijo) {
+        int mitad = (orden - 1) / 2;
+        NodoBPlus nuevoNodo = new NodoBPlus(orden, hijo.isEsHoja());
+
+        for (int i = mitad + 1, j = 0; i < hijo.getNumClaves(); i++, j++) {
+            nuevoNodo.getClaves()[j] = hijo.getClaves()[i];
+            hijo.getClaves()[i] = null;
+            nuevoNodo.setNumClaves(nuevoNodo.getNumClaves() + 1);
+        }
+
+        hijo.setNumClaves(mitad);
+
+        if (!hijo.isEsHoja()) {
+            for (int i = mitad + 1, j = 0; i <= orden; i++, j++) {
+                nuevoNodo.getHijos()[j] = hijo.getHijos()[i];
+                hijo.getHijos()[i] = null;
             }
-            
-            nuevoNodo.siguiente = nodoLleno.siguiente;
-            nodoLleno.siguiente = nuevoNodo;
-            nodoLleno.numClaves = mitad;
-            
-            for (int j = padre.numClaves; j > indice; j--) {
-                padre.hijos[j + 1] = padre.hijos[j];
-            }
-            padre.hijos[indice + 1] = nuevoNodo;
-            
-            for (int j = padre.numClaves - 1; j >= indice; j--) {
-                padre.claves[j + 1] = padre.claves[j];
-            }
-            padre.claves[indice] = nuevoNodo.claves[0];
-            padre.numClaves++;
         } else {
-            for (int j = 0; j < nuevoNodo.numClaves; j++) {
-                nuevoNodo.claves[j] = nodoLleno.claves[j + mitad + 1];
-            }
-            
-            for (int j = 0; j < orden - mitad; j++) {
-                nuevoNodo.hijos[j] = nodoLleno.hijos[j + mitad + 1];
-            }
-            
-            nodoLleno.numClaves = mitad;
-            
-            for (int j = padre.numClaves; j > indice; j--) {
-                padre.hijos[j + 1] = padre.hijos[j];
-            }
-            padre.hijos[indice + 1] = nuevoNodo;
-            
-            for (int j = padre.numClaves - 1; j >= indice; j--) {
-                padre.claves[j + 1] = padre.claves[j];
-            }
-            padre.claves[indice] = nodoLleno.claves[mitad];
-            padre.numClaves++;
+            nuevoNodo.setSiguiente(hijo.getSiguiente());
+            hijo.setSiguiente(nuevoNodo);
         }
+
+        for (int i = padre.getNumClaves(); i > indiceHijo; i--) {
+            padre.getClaves()[i] = padre.getClaves()[i - 1];
+            padre.getHijos()[i + 1] = padre.getHijos()[i];
+        }
+
+        padre.getClaves()[indiceHijo] = hijo.getClaves()[mitad];
+        padre.getHijos()[indiceHijo + 1] = nuevoNodo;
+        padre.setNumClaves(padre.getNumClaves() + 1);
     }
-    
-    public ListaEnlazada buscarPorGenero(String genero) {
-        ListaEnlazada resultados = buscarEnNodo(raiz, genero.toUpperCase());
-        
-        if (resultados != null && resultados.getTamanio() > 0) {
-            mensaje = "SE ENCONTRARON " + resultados.getTamanio() + " LIBROS DEL GENERO " + genero;
+
+    private void dividirHoja(NodoBPlus hoja) {
+        int mitad = (orden + 1) / 2;
+        NodoBPlus nuevaHoja = new NodoBPlus(orden, true);
+
+        int j = 0;
+        for (int i = mitad; i < hoja.getNumClaves(); i++) {
+            nuevaHoja.getClaves()[j++] = hoja.getClaves()[i];
+            hoja.getClaves()[i] = null;
+        }
+
+        nuevaHoja.setNumClaves(j);
+        hoja.setNumClaves(mitad);
+
+        nuevaHoja.setSiguiente(hoja.getSiguiente());
+        hoja.setSiguiente(nuevaHoja);
+
+        if (hoja == raiz) {
+            NodoBPlus nuevoPadre = new NodoBPlus(orden, false);
+            nuevoPadre.getClaves()[0] = nuevaHoja.getClaveMinima();
+            nuevoPadre.getHijos()[0] = hoja;
+            nuevoPadre.getHijos()[1] = nuevaHoja;
+            nuevoPadre.setNumClaves(1);
+            raiz = nuevoPadre;
         } else {
-            mensaje = "NO SE ENCONTRARON LIBROS DEL GENERO " + genero;
-            resultados = new ListaEnlazada();
+            insertarClaveEnPadre(hoja, nuevaHoja.getClaveMinima(), nuevaHoja);
         }
-        
-        return resultados;
     }
-    
-    private ListaEnlazada buscarEnNodo(NodoBPlus nodo, String clave) {
+
+    private void insertarClaveEnPadre(NodoBPlus hijoIzq, ColeccionLibro clave, NodoBPlus hijoDer) {
+        if (hijoIzq == raiz) {
+            NodoBPlus nuevoPadre = new NodoBPlus(orden, false);
+            nuevoPadre.getClaves()[0] = clave;
+            nuevoPadre.getHijos()[0] = hijoIzq;
+            nuevoPadre.getHijos()[1] = hijoDer;
+            nuevoPadre.setNumClaves(1);
+            raiz = nuevoPadre;
+            return;
+        }
+
+        NodoBPlus padre = buscarPadre(raiz, hijoIzq);
+
         int i = 0;
-        while (i < nodo.numClaves && clave.compareTo(nodo.claves[i]) > 0) {
+        while (i < padre.getNumClaves() && padre.getHijos()[i] != hijoIzq) {
             i++;
         }
-        
-        if (nodo.esHoja) {
-            if (i < nodo.numClaves && clave.equals(nodo.claves[i])) {
-                return (ListaEnlazada) nodo.valores[i];
+
+        for (int j = padre.getNumClaves(); j > i; j--) {
+            padre.getClaves()[j] = padre.getClaves()[j - 1];
+            padre.getHijos()[j + 1] = padre.getHijos()[j];
+        }
+
+        padre.getClaves()[i] = clave;
+        padre.getHijos()[i + 1] = hijoDer;
+        padre.setNumClaves(padre.getNumClaves() + 1);
+
+        if (padre.getNumClaves() == orden) {
+            dividirNodo(buscarPadre(raiz, padre), 0, padre);
+        }
+    }
+
+    private NodoBPlus buscarPadre(NodoBPlus actual, NodoBPlus hijo) {
+        if (actual == null || actual.isEsHoja()) {
+            return null;
+        }
+
+        for (int i = 0; i <= actual.getNumClaves(); i++) {
+            if (actual.getHijos()[i] == hijo) {
+                return actual;
+            } else {
+                NodoBPlus padre = buscarPadre(actual.getHijos()[i], hijo);
+                if (padre != null) {
+                    return padre;
+                }
+            }
+        }
+        return null;
+    }
+
+    private ColeccionLibro buscarColeccion(NodoBPlus nodo, int anio, String isbn) {
+        if (nodo == null) {
+            return null;
+        }
+
+        int i = 0;
+        while (i < nodo.getNumClaves() && anio > nodo.getClaves()[i].getAnioPublicacion()) {
+            i++;
+        }
+
+        if (nodo.isEsHoja()) {
+            if (i < nodo.getNumClaves()) {
+                ColeccionLibro c = nodo.getClaves()[i];
+                if (c.getAnioPublicacion() == anio && c.getIsbn().equals(isbn)) {
+                    return c;
+                }
             }
             return null;
         } else {
-            if (i < nodo.numClaves && clave.equals(nodo.claves[i])) {
-                i++;
-            }
-            return buscarEnNodo(nodo.hijos[i], clave);
+            return buscarColeccion(nodo.getHijos()[i], anio, isbn);
         }
     }
-    
-    public ListaEnlazada obtenerTodosLosLibros() {
-        ListaEnlazada todos = new ListaEnlazada();
-        NodoBPlus hoja = obtenerPrimeraHoja(raiz);
-        
+
+    public ArrayList<Libro> buscarPorGenero(String genero) {
+        ArrayList<Libro> resultados = new ArrayList<>();
+        NodoBPlus hoja = obtenerPrimeraHoja();
+
+        genero = genero.toUpperCase();
+
         while (hoja != null) {
-            for (int i = 0; i < hoja.numClaves; i++) {
-                ListaEnlazada lista = (ListaEnlazada) hoja.valores[i];
-                for (int j = 0; j < lista.getTamanio(); j++) {
-                    todos.insertarAlFinal(lista.obtener(j));
+            for (int i = 0; i < hoja.getNumClaves(); i++) {
+                ColeccionLibro coleccion = hoja.getClaves()[i];
+                if (coleccion != null) {
+                    for (Libro libro : coleccion.getCopias()) {
+                        if (libro.getGenero().toUpperCase().equals(genero)) {
+                            resultados.add(libro);
+                        }
+                    }
                 }
             }
-            hoja = hoja.siguiente;
+            hoja = hoja.getSiguiente();
         }
-        
-        mensaje = "SE OBTUVIERON " + todos.getTamanio() + " LIBROS EN TOTAL";
+
+        if (resultados.isEmpty()) {
+            mensaje = "NO SE ENCONTRARON LIBROS DEL GENERO " + genero;
+        } else {
+            mensaje = "SE ENCONTRARON " + resultados.size() + " LIBROS DEL GENERO " + genero;
+        }
+
+        return resultados;
+    }
+
+    public ArrayList<Libro> obtenerTodosLosLibros() {
+        ArrayList<Libro> todos = new ArrayList<>();
+        NodoBPlus hoja = obtenerPrimeraHoja();
+
+        while (hoja != null) {
+            for (int i = 0; i < hoja.getNumClaves(); i++) {
+                ColeccionLibro coleccion = hoja.getClaves()[i];
+                if (coleccion != null) {
+                    todos.addAll(coleccion.getCopias());
+                }
+            }
+            hoja = hoja.getSiguiente();
+        }
+
+        mensaje = "SE OBTUVIERON " + todos.size() + " LIBROS EN TOTAL";
         return todos;
     }
-    
-    private NodoBPlus obtenerPrimeraHoja(NodoBPlus nodo) {
-        if (nodo.esHoja) {
-            return nodo;
-        }
-        return obtenerPrimeraHoja(nodo.hijos[0]);
-    }
-    
+
     public String[] obtenerGeneros() {
-        ListaEnlazada generosLista = new ListaEnlazada();
-        NodoBPlus hoja = obtenerPrimeraHoja(raiz);
-        
+        ArrayList<String> generos = new ArrayList<>();
+        NodoBPlus hoja = obtenerPrimeraHoja();
+
         while (hoja != null) {
-            for (int i = 0; i < hoja.numClaves; i++) {
-                Libro libroTemp = new Libro(hoja.claves[i], "", "", 0, hoja.claves[i], null);
-                if (generosLista.buscarPorGenero(hoja.claves[i]).getTamanio() == 0) {
-                    generosLista.insertarAlFinal(libroTemp);
+            for (int i = 0; i < hoja.getNumClaves(); i++) {
+                ColeccionLibro coleccion = hoja.getClaves()[i];
+                if (coleccion != null) {
+                    for (Libro libro : coleccion.getCopias()) {
+                        String genero = libro.getGenero().toUpperCase();
+                        if (!generos.contains(genero)) {
+                            generos.add(genero);
+                        }
+                    }
                 }
             }
-            hoja = hoja.siguiente;
+            hoja = hoja.getSiguiente();
         }
-        
-        String[] generos = new String[generosLista.getTamanio()];
-        for (int i = 0; i < generosLista.getTamanio(); i++) {
-            generos[i] = generosLista.obtener(i).getGenero();
-        }
-        
-        return generos;
+
+        return generos.toArray(new String[0]);
     }
-    
-    public boolean eliminar(String genero, String isbn) {
+
+    public boolean eliminarPorGeneroYIsbn(String genero, String isbn) {
+        boolean eliminado = false;
+        NodoBPlus hoja = obtenerPrimeraHoja();
         genero = genero.toUpperCase();
-        ListaEnlazada lista = buscarEnNodo(raiz, genero);
-        
-        if (lista == null) {
-            mensaje = "ERROR: NO SE ENCONTRO EL GENERO " + genero;
-            return false;
-        }
-        
-        boolean eliminado = lista.eliminarPorISBN(isbn);
-        
-        if (eliminado) {
-            tamanio--;
-            mensaje = "LIBRO ELIMINADO CORRECTAMENTE DEL GENERO " + genero;
-            
-            if (lista.getTamanio() == 0) {
-                eliminarGeneroVacio(raiz, genero);
+
+        while (hoja != null) {
+            for (int i = 0; i < hoja.getNumClaves(); i++) {
+                ColeccionLibro coleccion = hoja.getClaves()[i];
+                if (coleccion != null) {
+                    ArrayList<Libro> libros = coleccion.getCopias();
+                    for (int j = 0; j < libros.size(); j++) {
+                        Libro libro = libros.get(j);
+                        if (libro.getGenero().toUpperCase().equals(genero)
+                                && libro.getIsbn().equals(isbn)) {
+                            libros.remove(j);
+                            eliminado = true;
+                            mensaje = "LIBRO ELIMINADO CORRECTAMENTE: " + libro.getTitulo();
+                            break;
+                        }
+                    }
+                }
             }
-        } else {
+            hoja = hoja.getSiguiente();
+        }
+
+        if (!eliminado) {
             mensaje = "ERROR: NO SE ENCONTRO EL LIBRO CON ISBN " + isbn + " EN EL GENERO " + genero;
         }
-        
+
         return eliminado;
     }
-    
-    private boolean eliminarGeneroVacio(NodoBPlus nodo, String clave) {
-        int i = 0;
-        while (i < nodo.numClaves && clave.compareTo(nodo.claves[i]) > 0) {
-            i++;
-        }
-        
-        if (nodo.esHoja) {
-            if (i < nodo.numClaves && clave.equals(nodo.claves[i])) {
-                for (int j = i; j < nodo.numClaves - 1; j++) {
-                    nodo.claves[j] = nodo.claves[j + 1];
-                    nodo.valores[j] = nodo.valores[j + 1];
-                }
-                nodo.numClaves--;
-                return true;
-            }
-            return false;
-        } else {
-            if (i < nodo.numClaves && clave.equals(nodo.claves[i])) {
-                i++;
-            }
-            return eliminarGeneroVacio(nodo.hijos[i], clave);
-        }
-    }
-    
+
     public void recorridoPorGeneros(AccionGenero accion) {
-        NodoBPlus hoja = obtenerPrimeraHoja(raiz);
-        
+        NodoBPlus hoja = obtenerPrimeraHoja();
+
         while (hoja != null) {
-            for (int i = 0; i < hoja.numClaves; i++) {
-                String genero = hoja.claves[i];
-                ListaEnlazada libros = (ListaEnlazada) hoja.valores[i];
-                accion.ejecutar(genero, libros);
-            }
-            hoja = hoja.siguiente;
-        }
-    }
-    
-    public void recorridoTodosLosLibros(AccionLibro accion) {
-        NodoBPlus hoja = obtenerPrimeraHoja(raiz);
-        
-        while (hoja != null) {
-            for (int i = 0; i < hoja.numClaves; i++) {
-                ListaEnlazada lista = (ListaEnlazada) hoja.valores[i];
-                for (int j = 0; j < lista.getTamanio(); j++) {
-                    accion.ejecutar(lista.obtener(j));
+            for (int i = 0; i < hoja.getNumClaves(); i++) {
+                ColeccionLibro coleccion = hoja.getClaves()[i];
+                if (coleccion != null) {
+                    for (Libro libro : coleccion.getCopias()) {
+                        accion.ejecutar(libro.getGenero(), coleccion.getCopias());
+                    }
                 }
             }
-            hoja = hoja.siguiente;
+            hoja = hoja.getSiguiente();
         }
     }
-    
+
+    public void recorridoTodosLosLibros(AccionLibro accion) {
+        NodoBPlus hoja = obtenerPrimeraHoja();
+
+        while (hoja != null) {
+            for (int i = 0; i < hoja.getNumClaves(); i++) {
+                ColeccionLibro coleccion = hoja.getClaves()[i];
+                if (coleccion != null) {
+                    for (Libro libro : coleccion.getCopias()) {
+                        accion.ejecutar(libro);
+                    }
+                }
+            }
+            hoja = hoja.getSiguiente();
+        }
+    }
+
+    private NodoBPlus obtenerPrimeraHoja() {
+        NodoBPlus actual = raiz;
+        while (actual != null && !actual.isEsHoja()) {
+            actual = actual.getHijos()[0];
+        }
+        return actual;
+    }
+
     public void limpiar() {
         raiz = new NodoBPlus(orden, true);
         tamanio = 0;
         mensaje = "ARBOL B+ LIMPIADO CORRECTAMENTE";
     }
-    
+
     @FunctionalInterface
     public interface AccionLibro {
+
         void ejecutar(Libro libro);
     }
-    
+
     @FunctionalInterface
     public interface AccionGenero {
-        void ejecutar(String genero, ListaEnlazada libros);
+
+        void ejecutar(String genero, ArrayList<Libro> libros);
     }
 }

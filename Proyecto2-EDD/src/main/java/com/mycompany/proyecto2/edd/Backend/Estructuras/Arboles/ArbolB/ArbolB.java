@@ -4,8 +4,8 @@
  */
 package com.mycompany.proyecto2.edd.Backend.Estructuras.Arboles.ArbolB;
 
-import com.mycompany.proyecto2.edd.Backend.Estructuras.ListaEnlazada.ListaEnlazada;
 import com.mycompany.proyecto2.edd.Backend.Objetos.Libro;
+import java.util.ArrayList;
 
 /**
  *
@@ -31,7 +31,7 @@ public class ArbolB {
     }
 
     public ArbolB() {
-        this(3);
+        this(5);
     }
 
     public String getMensaje() {
@@ -55,26 +55,30 @@ public class ArbolB {
     }
 
     public void insertar(Libro libro) {
-        if (libro == null) {
-            mensaje = "ERROR: NO SE PUEDE INSERTAR UN LIBRO NULO";
+        if (raiz == null) {
+            raiz = new NodoB(orden, true);
+            raiz.getClaves()[0] = new ColeccionLibro(libro);
+            raiz.setNumClaves(1);
             return;
         }
 
-        if (buscarPorAnio(libro.getAnioPublicacion()) != null) {
-            mensaje = "ERROR: YA EXISTE UN LIBRO CON EL ANIO " + libro.getAnioPublicacion();
+        NodoB r = raiz;
+
+        ColeccionLibro existente = buscarColeccion(raiz, libro.getAnioPublicacion(), libro.getIsbn());
+        if (existente != null) {
+            existente.agregarCopia(libro);
             return;
         }
 
-        if (raiz.getNumClaves() == orden - 1) {
+        if (r.getNumClaves() == orden - 1) {
             NodoB nuevaRaiz = new NodoB(orden, false);
-            nuevaRaiz.getHijos()[0] = raiz;
-            dividirHijo(nuevaRaiz, 0);
+            nuevaRaiz.getHijos()[0] = r;
+            dividirHijo(nuevaRaiz, 0, r);
             raiz = nuevaRaiz;
+            insertarNoLleno(nuevaRaiz, libro);
+        } else {
+            insertarNoLleno(r, libro);
         }
-
-        insertarNoLleno(raiz, libro);
-        tamanio++;
-        mensaje = "LIBRO INSERTADO CORRECTAMENTE: " + libro.getTitulo();
     }
 
     private void insertarNoLleno(NodoB nodo, Libro libro) {
@@ -85,16 +89,17 @@ public class ArbolB {
                 nodo.getClaves()[i + 1] = nodo.getClaves()[i];
                 i--;
             }
-            nodo.getClaves()[i + 1] = libro;
-            nodo.numClaves++;
+            nodo.getClaves()[i + 1] = new ColeccionLibro(libro);
+            nodo.setNumClaves(nodo.getNumClaves() + 1);
         } else {
             while (i >= 0 && libro.getAnioPublicacion() < nodo.getClaves()[i].getAnioPublicacion()) {
                 i--;
             }
             i++;
 
-            if (nodo.getHijos()[i].numClaves == orden - 1) {
-                dividirHijo(nodo, i);
+            if (nodo.getHijos()[i].getNumClaves() == orden - 1) {
+                dividirHijo(nodo, i, nodo.getHijos()[i]);
+
                 if (libro.getAnioPublicacion() > nodo.getClaves()[i].getAnioPublicacion()) {
                     i++;
                 }
@@ -103,70 +108,98 @@ public class ArbolB {
         }
     }
 
-    private void dividirHijo(NodoB padre, int indice) {
-        NodoB nodoLleno = padre.getHijos()[indice];
-        NodoB nuevoNodo = new NodoB(orden, nodoLleno.isEsHoja());
+    private void dividirHijo(NodoB padre, int indice, NodoB lleno) {
+        NodoB nuevo = new NodoB(orden, lleno.isEsHoja());
+        int t = (orden - 1) / 2;
 
-        int mitad = orden / 2;
-        nuevoNodo.numClaves = orden - mitad - 1;
+        nuevo.setNumClaves(t);
 
-        for (int j = 0; j < nuevoNodo.numClaves; j++) {
-            nuevoNodo.getClaves()[j] = nodoLleno.getClaves()[j + mitad + 1];
+        for (int j = 0; j < t; j++) {
+            nuevo.getClaves()[j] = lleno.getClaves()[j + t + 1];
+            lleno.getClaves()[j + t + 1] = null;
         }
 
-        if (!nodoLleno.isEsHoja()) {
-            for (int j = 0; j < orden - mitad; j++) {
-                nuevoNodo.getHijos()[j] = nodoLleno.getHijos()[j + mitad + 1];
+        if (!lleno.isEsHoja()) {
+            for (int j = 0; j <= t; j++) {
+                nuevo.getHijos()[j] = lleno.getHijos()[j + t + 1];
+                lleno.getHijos()[j + t + 1] = null;
             }
         }
 
-        nodoLleno.numClaves = mitad;
+        lleno.setNumClaves(t);
 
-        for (int j = padre.numClaves; j > indice; j--) {
+        for (int j = padre.getNumClaves(); j >= indice + 1; j--) {
             padre.getHijos()[j + 1] = padre.getHijos()[j];
         }
-        padre.getHijos()[indice + 1] = nuevoNodo;
+        padre.getHijos()[indice + 1] = nuevo;
 
-        for (int j = padre.numClaves - 1; j >= indice; j--) {
+        for (int j = padre.getNumClaves() - 1; j >= indice; j--) {
             padre.getClaves()[j + 1] = padre.getClaves()[j];
         }
-        padre.getClaves()[indice] = nodoLleno.getClaves()[mitad];
-        padre.numClaves++;
+        padre.getClaves()[indice] = lleno.getClaves()[t];
+        lleno.getClaves()[t] = null;
+
+        padre.setNumClaves(padre.getNumClaves() + 1);
     }
 
-    public Libro buscarPorAnio(int anio) {
-        Libro resultado = buscarEnNodo(raiz, anio);
-        if (resultado != null) {
-            mensaje = "LIBRO ENCONTRADO: " + resultado.getTitulo();
-        } else {
-            mensaje = "NO SE ENCONTRO NINGUN LIBRO CON EL ANIO " + anio;
+    private ColeccionLibro buscarColeccion(NodoB nodo, int anio, String isbn) {
+        if (nodo == null) {
+            return null;
         }
-        return resultado;
-    }
 
-    private Libro buscarEnNodo(NodoB nodo, int anio) {
         int i = 0;
-        while (i < nodo.numClaves && anio > nodo.getClaves()[i].getAnioPublicacion()) {
+        while (i < nodo.getNumClaves() && anio > nodo.getClaves()[i].getAnioPublicacion()) {
             i++;
         }
 
-        if (i < nodo.numClaves && anio == nodo.getClaves()[i].getAnioPublicacion()) {
+        if (i < nodo.getNumClaves()
+                && anio == nodo.getClaves()[i].getAnioPublicacion()
+                && nodo.getClaves()[i].getIsbn().equals(isbn)) {
             return nodo.getClaves()[i];
         }
 
         if (nodo.isEsHoja()) {
             return null;
         }
-
-        return buscarEnNodo(nodo.getHijos()[i], anio);
+        return buscarColeccion(nodo.getHijos()[i], anio, isbn);
     }
 
-    public ListaEnlazada buscarPorRangoAnios(int anioInicio, int anioFin) {
-        ListaEnlazada resultados = new ListaEnlazada();
+    public ColeccionLibro buscarPorAnio(int anio) {
+        ColeccionLibro resultado = buscarEnNodo(raiz, anio);
+
+        if (resultado != null) {
+            mensaje = "COLECCION ENCONTRADA: " + resultado.getCopias().size()
+                    + " LIBROS DEL ANIO " + anio;
+        } else {
+            mensaje = "NO SE ENCONTRO NINGUNA COLECCION CON EL ANIO " + anio;
+        }
+        return resultado;
+    }
+
+    private ColeccionLibro buscarEnNodo(NodoB nodo, int anio) {
+        int i = 0;
+
+        while (i < nodo.numClaves && anio > nodo.claves[i].getAnioPublicacion()) {
+            i++;
+        }
+
+        if (i < nodo.numClaves && anio == nodo.claves[i].getAnioPublicacion()) {
+            return nodo.claves[i];
+        }
+
+        if (nodo.esHoja) {
+            return null;
+        }
+
+        return buscarEnNodo(nodo.hijos[i], anio);
+    }
+
+    public ArrayList buscarPorRangoAnios(int anioInicio, int anioFin) {
+        ArrayList resultados = new ArrayList();
         buscarRangoEnNodo(raiz, anioInicio, anioFin, resultados);
 
-        if (resultados.getTamanio() > 0) {
-            mensaje = "SE ENCONTRARON " + resultados.getTamanio() + " LIBROS EN EL RANGO DE ANIOS";
+        if (!resultados.isEmpty()) {
+            mensaje = "SE ENCONTRARON " + resultados.size() + " LIBROS EN EL RANGO DE ANIOS";
         } else {
             mensaje = "NO SE ENCONTRARON LIBROS EN EL RANGO DE ANIOS ESPECIFICADO";
         }
@@ -174,24 +207,29 @@ public class ArbolB {
         return resultados;
     }
 
-    private void buscarRangoEnNodo(NodoB nodo, int anioInicio, int anioFin, ListaEnlazada resultados) {
+    private void buscarRangoEnNodo(NodoB nodo, int anioInicio, int anioFin, ArrayList<Libro> resultados) {
+        if (nodo == null) {
+            return;
+        }
         int i = 0;
 
         while (i < nodo.numClaves) {
-            if (!nodo.isEsHoja() && nodo.getClaves()[i].getAnioPublicacion() > anioInicio) {
-                buscarRangoEnNodo(nodo.getHijos()[i], anioInicio, anioFin, resultados);
+            int anioClave = nodo.claves[i].getAnioPublicacion();
+
+            if (!nodo.esHoja && anioClave > anioInicio) {
+                buscarRangoEnNodo(nodo.hijos[i], anioInicio, anioFin, resultados);
             }
 
-            if (nodo.getClaves()[i].getAnioPublicacion() >= anioInicio
-                    && nodo.getClaves()[i].getAnioPublicacion() <= anioFin) {
-                resultados.insertarAlFinal(nodo.getClaves()[i]);
+            if (anioClave >= anioInicio && anioClave <= anioFin) {
+                ArrayList<Libro> libros = nodo.claves[i].getCopias();
+                resultados.addAll(libros);
             }
 
             i++;
         }
 
-        if (!nodo.isEsHoja()) {
-            buscarRangoEnNodo(nodo.getHijos()[i], anioInicio, anioFin, resultados);
+        if (!nodo.esHoja) {
+            buscarRangoEnNodo(nodo.hijos[i], anioInicio, anioFin, resultados);
         }
     }
 
@@ -221,28 +259,33 @@ public class ArbolB {
 
     private boolean eliminarDeNodo(NodoB nodo, int anio) {
         int i = 0;
-        while (i < nodo.numClaves && anio > nodo.getClaves()[i].getAnioPublicacion()) {
+
+        while (i < nodo.numClaves && anio > nodo.claves[i].getAnioPublicacion()) {
             i++;
         }
 
-        if (i < nodo.numClaves && anio == nodo.getClaves()[i].getAnioPublicacion()) {
-            if (nodo.isEsHoja()) {
-                eliminarDeHoja(nodo, i);
+        if (i < nodo.numClaves && anio == nodo.claves[i].getAnioPublicacion()) {
+            if (nodo.esHoja) {
+                if (nodo.claves[i].getCopias().size() > 1) {
+                    nodo.claves[i].getCopias().removeLast();
+                } else {
+                    eliminarDeHoja(nodo, i);
+                }
             } else {
                 eliminarDeNodoInterno(nodo, i);
             }
             return true;
-        } else if (!nodo.isEsHoja()) {
-            boolean estaEnUltimoHijo = (i == nodo.numClaves);
+        } else if (!nodo.esHoja) {
+            boolean ultimoHijo = (i == nodo.numClaves);
 
-            if (nodo.getHijos()[i].numClaves < orden / 2) {
+            if (nodo.hijos[i].numClaves < orden / 2) {
                 llenar(nodo, i);
             }
 
-            if (estaEnUltimoHijo && i > nodo.numClaves) {
-                return eliminarDeNodo(nodo.getHijos()[i - 1], anio);
+            if (ultimoHijo && i > nodo.numClaves) {
+                return eliminarDeNodo(nodo.hijos[i - 1], anio);
             } else {
-                return eliminarDeNodo(nodo.getHijos()[i], anio);
+                return eliminarDeNodo(nodo.hijos[i], anio);
             }
         }
 
@@ -250,43 +293,44 @@ public class ArbolB {
     }
 
     private void eliminarDeHoja(NodoB nodo, int indice) {
-        for (int i = indice + 1; i < nodo.numClaves; i++) {
-            nodo.getClaves()[i - 1] = nodo.getClaves()[i];
+        for (int j = indice + 1; j < nodo.numClaves; j++) {
+            nodo.claves[j - 1] = nodo.claves[j];
         }
+        nodo.claves[nodo.numClaves - 1] = null;
         nodo.numClaves--;
     }
 
     private void eliminarDeNodoInterno(NodoB nodo, int indice) {
-        Libro libro = nodo.getClaves()[indice];
+        ColeccionLibro coleccion = nodo.claves[indice];
 
-        if (nodo.getHijos()[indice].numClaves >= orden / 2) {
-            Libro pred = obtenerPredecesor(nodo, indice);
-            nodo.getClaves()[indice] = pred;
-            eliminarDeNodo(nodo.getHijos()[indice], pred.getAnioPublicacion());
-        } else if (nodo.getHijos()[indice + 1].numClaves >= orden / 2) {
-            Libro succ = obtenerSucesor(nodo, indice);
-            nodo.getClaves()[indice] = succ;
-            eliminarDeNodo(nodo.getHijos()[indice + 1], succ.getAnioPublicacion());
+        if (nodo.hijos[indice].numClaves >= orden / 2) {
+            ColeccionLibro pred = obtenerPredecesor(nodo, indice);
+            nodo.claves[indice] = pred;
+            eliminarDeNodo(nodo.hijos[indice], pred.getAnioPublicacion());
+        } else if (nodo.hijos[indice + 1].numClaves >= orden / 2) {
+            ColeccionLibro succ = obtenerSucesor(nodo, indice);
+            nodo.claves[indice] = succ;
+            eliminarDeNodo(nodo.hijos[indice + 1], succ.getAnioPublicacion());
         } else {
             fusionar(nodo, indice);
-            eliminarDeNodo(nodo.getHijos()[indice], libro.getAnioPublicacion());
+            eliminarDeNodo(nodo.hijos[indice], coleccion.getAnioPublicacion());
         }
     }
 
-    private Libro obtenerPredecesor(NodoB nodo, int indice) {
-        NodoB actual = nodo.getHijos()[indice];
-        while (!actual.isEsHoja()) {
-            actual = actual.getHijos()[actual.numClaves];
+    private ColeccionLibro obtenerPredecesor(NodoB nodo, int indice) {
+        NodoB actual = nodo.hijos[indice];
+        while (!actual.esHoja) {
+            actual = actual.hijos[actual.numClaves];
         }
-        return actual.getClaves()[actual.numClaves - 1];
+        return actual.claves[actual.numClaves - 1];
     }
 
-    private Libro obtenerSucesor(NodoB nodo, int indice) {
-        NodoB actual = nodo.getHijos()[indice + 1];
-        while (!actual.isEsHoja()) {
-            actual = actual.getHijos()[0];
+    private ColeccionLibro obtenerSucesor(NodoB nodo, int indice) {
+        NodoB actual = nodo.hijos[indice + 1];
+        while (!actual.esHoja) {
+            actual = actual.hijos[0];
         }
-        return actual.getClaves()[0];
+        return actual.claves[0];
     }
 
     private void llenar(NodoB nodo, int indice) {
@@ -388,16 +432,27 @@ public class ArbolB {
     }
 
     private void recorridoInOrderNodo(NodoB nodo, AccionLibro accion) {
-        int i;
-        for (i = 0; i < nodo.numClaves; i++) {
-            if (!nodo.isEsHoja()) {
-                recorridoInOrderNodo(nodo.getHijos()[i], accion);
-            }
-            accion.ejecutar(nodo.getClaves()[i]);
+        if (nodo == null) {
+            return;
         }
 
-        if (!nodo.isEsHoja()) {
-            recorridoInOrderNodo(nodo.getHijos()[i], accion);
+        int i;
+        for (i = 0; i < nodo.numClaves; i++) {
+            if (!nodo.esHoja) {
+                recorridoInOrderNodo(nodo.hijos[i], accion);
+            }
+
+            ColeccionLibro coleccion = nodo.claves[i];
+            if (coleccion != null && coleccion.getCopias() != null) {
+                ArrayList<Libro> listaLibros = coleccion.getCopias();
+                for (Libro libro : listaLibros) {
+                    accion.ejecutar(libro);
+                }
+            }
+        }
+
+        if (!nodo.esHoja) {
+            recorridoInOrderNodo(nodo.hijos[i], accion);
         }
     }
 
